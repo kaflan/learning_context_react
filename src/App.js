@@ -4,7 +4,6 @@ import { Router, Route, Link } from './mini-router'
 
 const App = () => (
   <Router>
-    <div>
       <ul>
         <li><Link to="/">Home</Link></li>
         <li><Link to="/dashboard">Dashboard</Link></li>
@@ -15,27 +14,20 @@ const App = () => (
       <hr/>
 
       <Route exact path="/" render={() => (
-        <div>
           <h2>Home</h2>
-        </div>
       )}/>
       <Route path="/dashboard" component={Dashboard}/>
       <Route path="/about" component={About}/>
       <Route path="/topics" component={Topics}/>
-    </div>
   </Router>
 )
 
 const Dashboard = () => (
-  <div>
     <h2>Dashboard</h2>
-  </div>
 )
 
 const About = () => (
-  <div>
     <h2>About</h2>
-  </div>
 )
 
 const Topics = () => (
