@@ -1,68 +1,72 @@
-import React, {createContext} from "react";
+import React, { createContext, useState  } from "react";
 import { createBrowserHistory } from "history";
 
 
 const Context = createContext()
-const {Provider, Consumer} = Context;
+const { Provider, Consumer } = Context;
 const history = createBrowserHistory();
-class Router extends React.Component {
-  state = {url: window.location.pathname}
-  action = {
-    go: (url) =>this.setState(state => ({...state, url}), () => history.push(url))
+
+const  Router = ({ children }) =>  {
+  const [ url, setUrl ] = useState(window.location.pathname)
+  const action = {
+    go: (url) => {
+      setUrl( url)
+      history.push(url)
+    }
+  }
+
+  return (
+    <Provider value={{  url , action  }}>
+      {children}
+    </Provider>
+  );
+
+}
+
+const RouteConsumer = ({ exact, render, path, url , component: Component }) => {
+  const match = exact
+    ? url === path
+    : url.startsWith(path)
+
+  if (match) {
+    if (render) {
+      return render()
+    } else if (Component) {
+      return <Component />
+    }
   }
   
-  render() {
-    return (
-      <Provider value={{state: this.state, action:this.action}}>
-        {this.props.children}
-      </Provider>
-    );
-  }
-}
-const RouteConsumer = ({exact, render,path, state: {url}, component: Component}) =>{
-    const match = exact
-      ? url === path
-      : url.startsWith(path)
-    // debugger  
-    if (match) {
-      if (render) {
-        return render()
-      } else if (Component) {
-        return <Component/>
-      }
-    } 
-      return null
+  return null
 }
 
-class Route extends React.Component {
-  render() {
-    return <Consumer>
-            {(context) => <RouteConsumer
-                {...this.props}
-                {...context}
-            />}
-    </Consumer>;
-  }
-}
+const Route = (props) => (
+  <Consumer>
+    {(context) => <RouteConsumer
+      {...props}
+      {...context}
+    />}
+  </Consumer>
+);    
 
-class Link extends React.Component {
-  handleClick = context => e => {
-    e.preventDefault();
-    const {to} = this.props
+
+const Link = (props) => {
+  const handleClick = context => event => {
+    event.preventDefault();
+    const { to } = props
     context.action.go(to)
   };
 
-  render() {
-    return (
-     <Consumer>  
-      { context =>
-        <a href={`${this.props.to}`} onClick={this.handleClick(context)}>
-        {this.props.children}
+  return (
+    <Consumer>
+      {context =>
+        <a href={`${props.to}`} onClick={handleClick(context)}>
+          {props.children}
         </a>
-    }
-      </Consumer>  
-    );
-  }
+      }
+    </Consumer>
+  );
+
 }
+
 
 export { Router, Route, Link };

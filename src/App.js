@@ -38,7 +38,7 @@ const About = () => (
   </div>
 )
 
-const Topics = ({ match }) => (
+const Topics = () => (
   <div>
     <h2>Topics</h2>
     <ul>
